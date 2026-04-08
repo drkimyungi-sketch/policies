@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>PrayNest — Bible & Prayer App</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #faf7f2;
+      --bg2: #f2ece0;
+      --gold: #b8924a;
+      --gold-light: #d4aa6a;
+      --dark: #1c1712;
+      --text: #3a3228;
+      --muted: #8a7d6b;
+      --border: #e0d5c0;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Jost', sans-serif;
+      font-weight: 300;
+      overflow-x: hidden;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 22px 48px;
+      background: rgba(250,247,242,0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-logo {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.6rem;
+      font-weight: 600;
+      color: var(--dark);
+      letter-spacing: 0.02em;
+    }
+    .nav-logo span { color: var(--gold); }
+    .nav-links { display: flex; gap: 32px; }
+    .nav-links a {
+      font-size: 0.85rem;
+      font-weight: 400;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--gold); }
+
+    /* ── HERO ── */
+    .hero {
+      min-height: 100vh;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      text-align: center;
+      padding: 120px 24px 80px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Background texture */
+    .hero::before {
+      content: '';
+      position: absolute; inset: 0;
+      background:
+        radial-gradient(ellipse 60% 50% at 50% 40%, rgba(184,146,74,0.08) 0%, transparent 70%),
+        radial-gradient(ellipse 40% 30% at 20% 80%, rgba(184,146,74,0.05) 0%, transparent 60%);
+      pointer-events: none;
+    }
+
+    /* Decorative cross */
+    .cross {
+      width: 48px; height: 48px;
+      margin-bottom: 32px;
+      opacity: 0.4;
+      animation: fadeDown 1s ease both;
+    }
+
+    .verse-tag {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-size: 0.95rem;
+      color: var(--gold);
+      letter-spacing: 0.05em;
+      margin-bottom: 24px;
+      animation: fadeDown 1s 0.1s ease both;
+      opacity: 0;
+    }
+
+    h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(3rem, 8vw, 6rem);
+      font-weight: 300;
+      line-height: 1.05;
+      letter-spacing: -0.01em;
+      color: var(--dark);
+      margin-bottom: 28px;
+      animation: fadeDown 1s 0.2s ease both;
+      opacity: 0;
+    }
+    h1 em {
+      font-style: italic;
+      color: var(--gold);
+    }
+
+    .hero-sub {
+      font-size: 1.05rem;
+      color: var(--muted);
+      max-width: 480px;
+      line-height: 1.8;
+      margin-bottom: 48px;
+      animation: fadeDown 1s 0.35s ease both;
+      opacity: 0;
+    }
+
+    .cta-row {
+      display: flex; gap: 14px; flex-wrap: wrap; justify-content: center;
+      animation: fadeDown 1s 0.5s ease both;
+      opacity: 0;
+    }
+
+    .btn-primary {
+      background: var(--gold);
+      color: #fff;
+      border: none;
+      padding: 14px 32px;
+      font-family: 'Jost', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      text-decoration: none;
+      border-radius: 3px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .btn-primary:hover { background: #a07838; }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--text);
+      border: 1px solid var(--border);
+      padding: 14px 32px;
+      font-family: 'Jost', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 400;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      text-decoration: none;
+      border-radius: 3px;
+      cursor: pointer;
+      transition: border-color 0.2s, color 0.2s;
+    }
+    .btn-ghost:hover { border-color: var(--gold); color: var(--gold); }
+
+    @keyframes fadeDown {
+      from { opacity: 0; transform: translateY(-16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── DIVIDER ── */
+    .ornament {
+      text-align: center;
+      color: var(--gold-light);
+      font-size: 1.4rem;
+      letter-spacing: 0.5em;
+      padding: 20px 0;
+      opacity: 0.5;
+    }
+
+    /* ── FEATURES ── */
+    .features {
+      padding: 100px 48px;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .section-label {
+      font-size: 0.72rem;
+      font-weight: 500;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--gold);
+      text-align: center;
+      margin-bottom: 16px;
+    }
+
+    .section-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(2rem, 4vw, 3rem);
+      font-weight: 300;
+      text-align: center;
+      color: var(--dark);
+      margin-bottom: 64px;
+      line-height: 1.2;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 2px;
+      border: 1px solid var(--border);
+    }
+
+    .feature-card {
+      background: var(--bg);
+      padding: 44px 36px;
+      border: 1px solid var(--border);
+      transition: background 0.3s;
+    }
+    .feature-card:hover { background: var(--bg2); }
+
+    .feature-icon {
+      font-size: 1.6rem;
+      margin-bottom: 20px;
+      display: block;
+    }
+
+    .feature-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.35rem;
+      font-weight: 600;
+      color: var(--dark);
+      margin-bottom: 12px;
+    }
+
+    .feature-desc {
+      font-size: 0.9rem;
+      color: var(--muted);
+      line-height: 1.75;
+    }
+
+    /* ── VERSE BANNER ── */
+    .verse-banner {
+      background: var(--dark);
+      padding: 80px 48px;
+      text-align: center;
+    }
+
+    .verse-banner blockquote {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-size: clamp(1.4rem, 3vw, 2.2rem);
+      font-weight: 300;
+      color: #f0e8d8;
+      max-width: 700px;
+      margin: 0 auto 20px;
+      line-height: 1.5;
+    }
+
+    .verse-banner cite {
+      font-size: 0.85rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--gold-light);
+      font-style: normal;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--bg2);
+      border-top: 1px solid var(--border);
+      padding: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 24px;
+    }
+
+    .footer-logo {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.4rem;
+      font-weight: 600;
+      color: var(--dark);
+    }
+    .footer-logo span { color: var(--gold); }
+
+    .footer-links {
+      display: flex; gap: 24px; flex-wrap: wrap;
+    }
+    .footer-links a {
+      font-size: 0.82rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .footer-links a:hover { color: var(--gold); }
+
+    .footer-copy {
+      font-size: 0.8rem;
+      color: var(--muted);
+      width: 100%;
+      text-align: center;
+      padding-top: 24px;
+      border-top: 1px solid var(--border);
+      margin-top: 8px;
+    }
+
+    @media (max-width: 600px) {
+      nav { padding: 18px 20px; }
+      .nav-links { display: none; }
+      .features { padding: 60px 20px; }
+      footer { padding: 32px 20px; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <div class="nav-logo">Pray<span>Nest</span></div>
+    <div class="nav-links">
+      <a href="#features">Features</a>
+      <a href="./terms-of-service.html">Terms</a>
+      <a href="./privacy-policy.html">Privacy</a>
+    </div>
+  </nav>
+
+  <section class="hero">
+    <svg class="cross" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect x="20" y="4" width="8" height="40" rx="2" fill="#b8924a"/>
+      <rect x="4" y="16" width="40" height="8" rx="2" fill="#b8924a"/>
+    </svg>
+    <p class="verse-tag">"Be still and know that I am God" — Psalm 46:10</p>
+    <h1>Your sacred space<br/>for <em>prayer & the Word</em></h1>
+    <p class="hero-sub">PrayNest brings your Bible reading and prayer life together in one peaceful, distraction-free app.</p>
+    <div class="cta-row">
+      <a href="#features" class="btn-primary">Explore Features</a>
+      <a href="./privacy-policy.html" class="btn-ghost">Privacy Policy</a>
+    </div>
+  </section>
+
+  <div class="ornament">✦ ✦ ✦</div>
+
+  <section class="features" id="features">
+    <p class="section-label">What We Offer</p>
+    <h2 class="section-title">Everything for your<br/>daily spiritual practice</h2>
+
+    <div class="features-grid">
+      <div class="feature-card">
+        <span class="feature-icon">📖</span>
+        <div class="feature-title">Bible Reading</div>
+        <p class="feature-desc">Access the full Bible with multiple translations. Highlight, bookmark, and journal your reflections as you read.</p>
+      </div>
+      <div class="feature-card">
+        <span class="feature-icon">🙏</span>
+        <div class="feature-title">Prayer Journal</div>
+        <p class="feature-desc">Record your prayers, track answered prayers, and build a personal history of your walk with God.</p>
+      </div>
+      <div class="feature-card">
+        <span class="feature-icon">🕊️</span>
+        <div class="feature-title">Daily Devotionals</div>
+        <p class="feature-desc">Start each morning with a curated verse and reflection to set your heart and mind for the day ahead.</p>
+      </div>
+      <div class="feature-card">
+        <span class="feature-icon">🔔</span>
+        <div class="feature-title">Prayer Reminders</div>
+        <p class="feature-desc">Set gentle reminders to pause, breathe, and pray throughout your day — no matter how busy life gets.</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="verse-banner">
+    <blockquote>"Do not be anxious about anything, but in every situation, by prayer and petition, present your requests to God."</blockquote>
+    <cite>Philippians 4:6</cite>
+  </div>
+
+  <footer>
+    <div class="footer-logo">Pray<span>Nest</span></div>
+    <div class="footer-links">
+      <a href="./terms-of-service.html">Terms of Service</a>
+      <a href="./privacy-policy.html">Privacy Policy</a>
+    </div>
+    <p class="footer-copy">© 2026 PrayNest. All rights reserved.</p>
+  </footer>
+
+</body>
+</html>
